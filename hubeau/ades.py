@@ -5,7 +5,7 @@ import pandas as pd
 class GestionnairePiezometrie:
     def __init__(self, dossier_sortie="donnees_bassin"):
         """
-        Initialise le gestionnaire et crée le dossier de sauvegarde s'il n'existe pas.
+        dossier de sauvegarde s'il n'existe pas.
         """
         self.dossier_sortie = dossier_sortie
         self.url_base = "https://hubeau.eaufrance.fr/api/v1/niveaux_nappes/chroniques.csv"
@@ -54,7 +54,7 @@ class GestionnairePiezometrie:
             chemin_complet = os.path.join(self.dossier_sortie, nom_fichier)
 
             # Sauvegarde en CSV local (sans l'index de pandas)
-            df.to_csv(chemin_complet, index=False, sep=";")
+            df.to_csv(chemin_complet, index=False, sep = ';' )
             print(f"  -> Succès : {len(df)} mesures sauvegardées dans {nom_fichier}")
             return True
 
