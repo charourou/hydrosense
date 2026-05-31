@@ -27,17 +27,32 @@ class GestionnairePiezometrie:
         'profondeur_nappe']
 
         """
+        # Verifier que la donnée est exite peut-être
+        nom_fichier = f"piezo_{bss_id.replace('/', '_')}.csv"
+        chemin_complet = os.path.join(self.dossier_sortie, nom_fichier)
+        # print(chemin_complet)
+        # print(os.path.exists(chemin_complet))
+        # print(f"Dossier de travail actuel : {os.getcwd()}")
+        # print(f"Chemin complet cherché : {os.path.abspath(chemin_complet)}")
 
-        # selection des champs OPTIONNEL
+
+        if os.path.exists(chemin_complet):
+            print(f"Info: données {bss_id} déja présente")
+            return pd.read_csv(chemin_complet, sep=';')
+
+
+
+        #  selection des champs OPTIONNEL
         champs_utiles = "date_mesure,niveau_nappe_eau,profondeur_nappe"
         url = f"{self.url_base}?bss_id={bss_id}&size=20000&fields={champs_utiles}"
         # Tout les champs - Attention NE PAS GARDER TOUT LES CHAMPS POUR DES sauvegardes de masse.
-        url = f"{self.url_base}?bss_id={bss_id}&size=20000&"
+        if False:
+            url = f"{self.url_base}?bss_id={bss_id}&size=20000&"
 
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         print(f"Téléchargement de {bss_id}...")
-        try: # Pandas gère directement le téléchargement du CSV depuis l'URL
+        try:
             df = pd.read_csv(url, sep=";")
 
             if df.empty:
@@ -49,14 +64,10 @@ class GestionnairePiezometrie:
                 df['date_mesure'] = pd.to_datetime(df['date_mesure'])
                 df = df.sort_values('date_mesure')
 
-            # nom de fichier "piezo_BSS001EUKK"
-            nom_fichier = f"piezo_{bss_id.replace('/', '_')}.csv"
-            chemin_complet = os.path.join(self.dossier_sortie, nom_fichier)
-
             # Sauvegarde en CSV local (sans l'index de pandas)
             df.to_csv(chemin_complet, index=False, sep = ';' )
             print(f"  -> Succès : {len(df)} mesures sauvegardées dans {nom_fichier}")
-            return True
+            return df
 
         except Exception as e:
             print(f"  -> Erreur lors du traitement de {bss_id} : {e}")
